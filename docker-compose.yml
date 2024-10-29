@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./bet-maker/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  line-provider:
+    build:
+      context: ./line-provider
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./line-provider/.env
+
+  bet-maker:
+    build:
+      context: ./bet-maker
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./bet-maker/.env
+    depends_on:
+      - db
+      - line-provider
+
+volumes:
+  postgres_data:
